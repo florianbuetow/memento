@@ -58,13 +58,13 @@ help:
 init:
     @echo ""
     @printf "\033[0;34m=== Initializing memento-skills ===\033[0m\n"
-    @if ! command -v gawk >/dev/null 2>&1; then \
-        printf "\033[0;31m✗ Error: gawk is not installed\033[0m\n"; \
-        printf "  Install with: brew install gawk\n"; \
+    @if ! command -v awk >/dev/null 2>&1; then \
+        printf "\033[0;31m✗ Error: awk is not installed\033[0m\n"; \
+        printf "  awk ships with macOS and Linux; install it via your package manager if missing\n"; \
         echo ""; \
         exit 1; \
     fi
-    @printf "\033[0;32m✓ gawk is installed\033[0m\n"
+    @printf "\033[0;32m✓ awk is installed\033[0m\n"
     @if ! command -v python3 >/dev/null 2>&1; then \
         printf "\033[0;31m✗ Error: python3 is not installed\033[0m\n"; \
         printf "  Install Python 3 from: https://python.org/downloads/\n"; \

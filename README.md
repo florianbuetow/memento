@@ -11,7 +11,7 @@ Memento gives an AI agent a procedural memory: atomic, reusable skills that can 
 
 ## Setup
 
-**Requirements:** [`just`](https://github.com/casey/just), `gawk`, and `python3`.
+**Requirements:** [`just`](https://github.com/casey/just), `awk`, and `python3`.
 
 ```bash
 git clone https://github.com/florianbuetow/memento
