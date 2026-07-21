@@ -1,10 +1,13 @@
 # Memento
 
-A filesystem-backed library of small, chainable skills for AI agents.
+Memento gives an AI agent a procedural memory: atomic, reusable skills that can be chained into workflows via a typesystem that matches outputs to inputs. State a goal in plain language and memento assembles the skills to reach it - or names the skill you need to build.
 
-## About
+## Key Properties
 
-Memento is a **procedural memory** for an AI agent: a set of atomic skills, each doing one thing (download a video, transcribe audio, summarize text, …). From a plain-language goal it chains the right skills together to get the job done - or tells you which skill is still missing, so the library grows exactly where you need it.
+- **Procedural agent memory** - stored how-to-do actinos the agent can run instead of re-deriving it every time.
+- **Chainable atomic skills** - each skill does exactly one thing, with typed inputs and outputs.
+- **Deterministic skill chaining** - every skill validates its inputs and outputs and runs the same way each time.
+- **Graph search** - Dijkstra finds the shortest chain of skills for a goal, or flags missing skills if there is a gap.
 
 ## Setup
 
@@ -44,28 +47,45 @@ Memento finds the chain of skills, then walks you through running it - or tells 
 
 ```
 memento/
-├── .claude/skills/           # Claude Code slash commands (/memento, …)
+├── .claude/
+│   └── skills/                    # Claude Code slash commands
+│       ├── memento/               # /memento - plan a chain for a goal
+│       ├── memento-add-skill/
+│       ├── memento-update-skill/
+│       ├── memento-remove-skill/
+│       └── memento-rebuild-graph/
 ├── .memento/
-│   ├── index.md              # overview / entry point
-│   ├── skills/               # atomic skills, grouped by category
+│   ├── index.md                   # overview / entry point
+│   ├── skills/                    # atomic skills, grouped by category
 │   │   ├── categories.md
 │   │   ├── agents/
 │   │   ├── audio/
 │   │   │   └── transcription/whisper_mlx/
-│   │   │       ├── SKILL.md       # typed contract + procedure
-│   │   │       └── resources/     # tool + validation scripts
+│   │   │       ├── SKILL.md        # typed contract + procedure
+│   │   │       └── resources/      # tool + validation scripts
 │   │   ├── images/
 │   │   ├── system/
 │   │   ├── text/
 │   │   └── video/
-│   ├── scripts/              # graph build + chain-finder
-│   ├── graph/                # generated skill graph
-│   ├── resources/            # skill guide + shared helpers
-│   └── logs/                 # per-run execution logs
-├── docs/                     # presentation
+│   ├── scripts/                   # build + query the skill graph
+│   │   ├── build_skill_graph.sh
+│   │   ├── compute_edge_weights.py
+│   │   ├── dijkstra.py
+│   │   └── find_connection.py
+│   ├── graph/                     # generated skill graph
+│   │   ├── skills_nodes.txt
+│   │   └── skills_edges.txt
+│   ├── resources/                 # shared helpers + skill guide
+│   │   ├── skill_guide.md
+│   │   └── run_logged.sh
+│   └── logs/                      # per-run execution logs
+├── docs/
+│   └── memento_presentation.html
 ├── tests/
-├── justfile                  # init / build / test / install
-└── LICENSE
+├── justfile                       # init / build / test / install
+├── CHANGELOG.md
+├── LICENSE
+└── README.md
 ```
 
 ## Details
