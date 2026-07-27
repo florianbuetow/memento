@@ -7,6 +7,7 @@ Registry of all top-level skill categories under `.memento/skills/`.
 | agents   | Skills for launching AI coding agents.     | `./agents/` |
 | audio    | Skills for audio file manipulation.        | `./audio/` |
 | images   | Skills for image file manipulation.        | `./images/` |
+| research | Skills for research and knowledge search.  | `./research/` |
 | system   | Skills for controlling the local machine.  | `./system/` |
 | text     | Skills for text file manipulation.         | `./text/`  |
 | video    | Skills for video file manipulation.        | `./video/` |

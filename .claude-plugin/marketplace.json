@@ -1,0 +1,14 @@
+{
+  "name": "memento",
+  "owner": {
+    "name": "Florian",
+    "email": "fbuetow@gmx.de"
+  },
+  "plugins": [
+    {
+      "name": "memento",
+      "source": "./plugins/memento",
+      "description": "Procedural memory for AI agents: map a goal to a chain of atomic, typed skills via graph search, and add, update, remove, or rebuild skills in the library."
+    }
+  ]
+}
