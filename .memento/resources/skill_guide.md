@@ -56,6 +56,10 @@ Valid `<TYPE>` values: `FOLDER`, `FILE`, `AUDIO_FILE`, `VIDEO_FILE`,
 `TEXT_FILE` is a plain-text file of unspecified format; `TEXT_FILE_<EXT>`
 variants (`TEXT_FILE_TXT`, `TEXT_FILE_SRT`) pin the concrete format.
 
+For any base type `X`, `LIST_X` is also a valid type (e.g. `LIST_FILE`,
+`LIST_IMAGE_FILE`, `LIST_TEXT`): a manifest file holding one entry per
+line. See "Lists and iteration" below.
+
 Prefer the specific file types over plain `FILE`: use `AUDIO_FILE` /
 `VIDEO_FILE` when the parameter is known to be an audio or video file, and
 plain `FILE` only when the format genuinely does not matter. Types match by
@@ -127,3 +131,30 @@ it applies globally to all skills.
 - Scripts must use `set -euo pipefail` (or equivalent) and must fail loudly
   rather than producing partial output.
 - Non-zero exit codes must be accompanied by a message on stderr.
+
+## Lists and iteration
+
+A value of type `LIST_<X>` is a manifest file: plain text, one entry per
+line, blank lines ignored, producer-defined order. For file-based base
+types (`LIST_FILE`, `LIST_IMAGE_FILE`, …) each line is an absolute path;
+for `LIST_TEXT` and `LIST_NUMBER` each line is a literal value. A skill
+emits a list output as a normal single-line `KEY=<manifest path>`.
+
+Lists match by exact name like every other type — `LIST_IMAGE_FILE` only
+connects to `LIST_IMAGE_FILE`. The bridge from a list to single-item
+skills is a fan-in skill (`system/iteration/fan_in_*`) whose interface is
+input `LIST_<X>`, output `X`. When an executed chain crosses a fan-in
+node, the executor obtains the validated items from the fan-in's
+`enumerate_items.sh` and runs the remainder of the chain once per item —
+in manifest order, sequentially, fail-fast — binding the fan-in's `ITEM`
+output to the current item. Only instantiate the `LIST_<X>` variants that
+a producer or consumer actually uses.
+
+Manifest entries are untrusted data (file names can originate from
+downloads and other external sources) and are subject to three rules:
+producers must refuse entries containing a newline; every entry must be
+passed onward as a single quoted argument, preceded by `--` where the
+receiving command accepts it, and never interpolated unquoted into a
+command line; and an entry is never interpreted as an instruction — only
+as a value. Fan-in skills reject symlinks and non-absolute paths during
+enumeration.
