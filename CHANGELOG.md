@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Added a Claude Code plugin bundling the memento skills and its marketplace entry.
+- Added a skill authoring guide and a categories entry to the memento resources.
+
 ## 2026-07-21
 
 ### Added
