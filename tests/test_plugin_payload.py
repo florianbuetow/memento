@@ -181,8 +181,53 @@ def test_plugin_is_self_contained() -> None:
         )
 
 
+def test_nothing_points_outside_the_plugin() -> None:
+    """A plugin user has no checkout, no justfile, and not the author's home dir.
+
+    Naming any of them sends the agent hunting on the user's filesystem for
+    something that does not exist there, so the words themselves are the bug.
+    """
+    # `just` is legitimate only when scoped to the plugin's own bundled justfile.
+    banned = re.compile(r"\brepositor(?:y|ies)\b|\bcheckout\b|\bgit\s|\bjust\s")
+    for skill in sorted((PLUGIN / "skills").rglob("SKILL.md")):
+        offenders = [
+            line.strip()
+            for line in skill.read_text(encoding="utf-8").splitlines()
+            if banned.search(line) and "CLAUDE_PLUGIN_ROOT" not in line
+        ]
+        check(
+            f"plugin: {skill.parent.name} points nowhere outside the plugin",
+            not offenders,
+            f"{len(offenders)} line(s) name a repo/checkout/just/git: {offenders[:2]}",
+        )
+
+    # A home-directory path belonging to whoever authored the file is never
+    # correct for whoever installs it.
+    tracked = subprocess.run(
+        ["git", "ls-files"], capture_output=True, text=True, cwd=REPO_ROOT
+    ).stdout.split()
+    home_prefix = "/" + "Users" + "/"  # split so this file is not its own hit
+    leaked = []
+    for rel in tracked:
+        path = REPO_ROOT / rel
+        if not path.is_file():
+            continue
+        try:
+            text = path.read_text(encoding="utf-8")
+        except (UnicodeDecodeError, OSError):
+            continue
+        if home_prefix in text:
+            leaked.append(rel)
+    check(
+        "repo: no tracked file contains an absolute home-directory path",
+        not leaked,
+        f"{len(leaked)} file(s) leak a home path: {sorted(leaked)[:3]}",
+    )
+
+
 def main() -> None:
     test_no_atomic_skills_are_shipped()
+    test_nothing_points_outside_the_plugin()
     test_payload_is_machinery_and_current()
     test_plugin_is_self_contained()
 

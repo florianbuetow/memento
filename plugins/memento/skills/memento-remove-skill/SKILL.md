@@ -18,5 +18,5 @@ Delete one skill directory from `$MEMENTO_ENV/skills/` and rebuild the graph. Re
 2. Show the blast radius before deleting: `grep '<skill id>' "$MEMENTO_ENV/graph/skills_edges.txt"`. Chains through this node will break. If the user did not name this exact skill explicitly, confirm before deleting.
 3. Delete the skill directory: `rm -rf "$MEMENTO_ENV/skills/<category>/<subcategory>/<skill_name>"`
 4. Prune now-empty parents: remove the subcategory directory if it is empty, then the category directory if it is empty. If the category directory was removed, delete its row from `$MEMENTO_ENV/skills/categories.md`.
-5. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. Inside the memento repository run `just test` instead — it rebuilds first, then asserts graph correctness.
+5. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. It prints the fresh node and edge counts; confirm the removal lowered the node count by one.
 6. Report: the removed node and its former edges, plus any remaining skill that lost its only inbound or outbound connection (now unreachable in chains).

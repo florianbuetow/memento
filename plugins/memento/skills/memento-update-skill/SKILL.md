@@ -19,5 +19,5 @@ Modify one existing skill under `$MEMENTO_ENV/skills/` and rebuild the graph. In
    - Interface change: update the frontmatter `inputs`/`outputs` (guide TYPE values only) AND the Inputs/Outputs prose AND the validators. All three must stay consistent.
    - Procedure/helper change: keep the validate-input → helper → validate-output shape and the determinism contract; keep helpers executable and referenced as skill-relative `resources/<name>.sh`.
    - Rename/move: move the directory to the new `category/subcategory/name`, update the frontmatter `name`/`category`/`subcategory` to match the new path, and update `$MEMENTO_ENV/skills/categories.md` if a category appears or empties out.
-3. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. Inside the memento repository run `just test` instead — it rebuilds first, then asserts graph correctness.
+3. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. It prints the fresh node and edge counts; the node count should be unchanged unless the skill was renamed or moved.
 4. Report the edge diff — "before" vs a fresh `grep` of the graph files: which chain connections were gained or lost. Call out lost edges explicitly; they may break chains the user relies on.

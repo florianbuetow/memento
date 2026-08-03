@@ -21,5 +21,5 @@ Create one new atomic skill under `$MEMENTO_ENV/skills/` and rebuild the graph. 
    - `SKILL.md` per the guide (frontmatter, title, Purpose, Inputs, Outputs, Procedure, Validation).
    - `resources/validate_input.sh`, `resources/validate_output.sh`, and the helper script the Procedure invokes — `set -euo pipefail`, absolute-path safe, deterministic. Reference them as skill-relative `resources/<name>.sh`, never as a path under the library root, so the skill works from either library.
 5. Make the scripts executable: `find "$MEMENTO_ENV/skills/<category>/<subcategory>/<skill_name>" -name "*.sh" -exec chmod +x {} +`
-6. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. Inside the memento repository run `just test` instead — it rebuilds first, then asserts graph correctness.
+6. Rebuild the graph and verify: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"`. It prints the fresh node and edge counts; confirm the new skill raised the node count by one.
 7. Report the result: the new node line from `$MEMENTO_ENV/graph/skills_nodes.txt` and its edges from `$MEMENTO_ENV/graph/skills_edges.txt` — i.e. which existing skills the new one can chain with. A new skill with zero edges is worth flagging to the user.

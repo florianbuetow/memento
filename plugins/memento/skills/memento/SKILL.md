@@ -13,8 +13,8 @@ Resolve the user's goal to typed endpoints, then let `$MEMENTO_ENV/scripts/find_
    ```bash
    MEMENTO_ENV="${MEMENTO_ENV:-$([ -d .memento ] && echo ./.memento || echo "$HOME/.memento")}"
    ```
-   A project-local `.memento/` shadows the personal library in `~/.memento`; an already-set `MEMENTO_ENV` wins over both. If the resolved directory does not exist, stop and tell the user to run `just install` from the memento repository.
-1. Freshen the graph: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"` (idempotent and cheap; a stale graph gives wrong answers). Inside the memento repository `just build` does the same thing.
+   A project-local `.memento/` shadows the personal library in `~/.memento`; an already-set `MEMENTO_ENV` wins over both. If the resolved directory does not exist, stop and offer /memento-install, which installs the library bundled with this plugin to `~/.memento`.
+1. Freshen the graph: `"$MEMENTO_ENV/scripts/build_skill_graph.sh"` (idempotent and cheap; a stale graph gives wrong answers).
 2. Read `$MEMENTO_ENV/graph/skills_nodes.txt` and map the goal to two endpoints:
    - FROM — what is available: a specific skill (`skill:<category/subcategory/name>`) or the TYPE held (`type:TEXT` for a URL or prompt, `type:VIDEO_FILE` for a video on disk, …).
    - TO — what is wanted: a specific skill, or the TYPE of the desired artifact (`type:TEXT_FILE_TXT` for a transcript or plain text, `type:TEXT_FILE_SRT` for subtitles, …).

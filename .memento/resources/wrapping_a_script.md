@@ -2,7 +2,7 @@
 
 > **This document is a worked example, not a spec.** It illustrates how
 > to take an existing external tool (in this case the shellscript
-> `/Users/flo/scripts/transcribe.sh`) and wrap it as a memento atomic
+> `~/scripts/transcribe.sh`) and wrap it as a memento atomic
 > skill. The result was the skill at
 > `$MEMENTO_ENV/skills/audio/transcription/whisper_mlx/`. The canonical format
 > rules live in `$MEMENTO_ENV/resources/skill_guide.md`; this document shows
@@ -64,7 +64,7 @@ What `transcribe.sh` provided concretely:
 - **Constraints**: documented enum for `MODEL`, documented `-en` model +
   `LANGUAGE` constraint, documented accepted file extensions.
 - **Failure**: red `✗` messages printed to stderr followed by `exit 1`.
-- **Location**: a stable absolute path at `/Users/flo/scripts/transcribe.sh`.
+- **Location**: a stable absolute path at `~/scripts/transcribe.sh`.
 
 That set is the minimum we needed. Anything beyond it (what the tool does
 internally, which libraries it calls, where it writes intermediate files)
@@ -121,7 +121,7 @@ throughout.
 ## The starting point
 
 An existing tool you want to expose as an atomic skill. In this example:
-`/Users/flo/scripts/transcribe.sh`, which transcribes a media file into a
+`~/scripts/transcribe.sh`, which transcribes a media file into a
 cleaned `.txt` and `.srt` pair.
 
 ## The end state
