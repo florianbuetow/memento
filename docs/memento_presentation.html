@@ -322,7 +322,7 @@
     <div class="cols2">
       <div class="card">
         <h3>Running example: audio/tts/kokoro</h3>
-        <div class="tree">.memento/skills/<b>audio/tts/kokoro</b>/
+        <div class="tree">$MEMENTO_ENV/skills/<b>audio/tts/kokoro</b>/
 ├── <b>SKILL.md</b>              <span class="an">← contract + procedure</span>
 └── resources/
     ├── <b>say.sh</b>            <span class="an">← the tool (does the one thing)</span>
@@ -600,7 +600,7 @@ system/tmux/wrap_new agents/fire_and_forget/opus <span class="g">1</span></pre>
     <div class="cols2">
       <div>
         <pre class="code"><span class="c"># every skill's main tool is wrapped:</span>
-.memento/resources/<span class="g">run_logged.sh</span> \
+$MEMENTO_ENV/resources/<span class="g">run_logged.sh</span> \
     audio/transcription/whisper_mlx \
     <span class="c">&lt;tool&gt; &lt;args…&gt;</span>
 

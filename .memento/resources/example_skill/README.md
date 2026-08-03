@@ -13,7 +13,7 @@ requires and the original was missing).
 
 ## What it shows
 
-- The full required structure under `.memento/skills/<category>/<subcategory>/<skill_name>/`:
+- The full required structure under `$MEMENTO_ENV/skills/<category>/<subcategory>/<skill_name>/`:
   ```
   SKILL.md
   resources/
@@ -34,8 +34,8 @@ requires and the original was missing).
 - The "wrap an external shellscript" pattern documented in
   `wrapping_a_script.md`. This example wraps `ffmpeg` (a system binary)
   directly, which is also a valid shape. For the external-script-wrapping
-  shape, see one of the live skills under `.memento/skills/`, for example
-  `.memento/skills/video/download/from_youtube/`.
+  shape, see one of the live skills under `$MEMENTO_ENV/skills/`, for example
+  `$MEMENTO_ENV/skills/video/download/from_youtube/`.
 
 ## Read alongside
 
@@ -45,9 +45,9 @@ requires and the original was missing).
 
 ## Do not invoke from `skills/`
 
-This directory is intentionally outside `.memento/skills/`. The skill graph
-builder (`build_skill_graph.sh`) scans only `.memento/skills/`, so this
-example never appears as a node in `.memento/graph/skills_nodes.txt` /
-`.memento/graph/skills_edges.txt`.
+This directory is intentionally outside `$MEMENTO_ENV/skills/`. The skill graph
+builder (`build_skill_graph.sh`) scans only `$MEMENTO_ENV/skills/`, so this
+example never appears as a node in `$MEMENTO_ENV/graph/skills_nodes.txt` /
+`$MEMENTO_ENV/graph/skills_edges.txt`.
 That is by design — the example is for humans to read, not for the graph to
 chain.

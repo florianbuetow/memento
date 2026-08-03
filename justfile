@@ -45,6 +45,7 @@ help:
     @printf "\033[0;33mSetup & Lifecycle:\033[0m\n"
     @printf "  %-40s %s\n" "init" "Verify required tools and prepare the repository"
     @printf "  %-40s %s\n" "install" "Copy .memento to ~/.memento"
+    @printf "  %-40s %s\n" "env" "Show the resolved MEMENTO_ENV directory"
     @printf "  %-40s %s\n" "help" "Show this help message"
     @echo ""
     @printf "\033[0;33mSkill Graph:\033[0m\n"
@@ -104,13 +105,38 @@ install:
     printf "\033[0;32m✓ copied to %s\033[0m\n" "$DEST"
     find "$DEST" -name "*.sh" -exec chmod +x {} +
     printf "\033[0;32m✓ scripts in %s are executable\033[0m\n" "$DEST"
+    printf "  the memento skills now resolve this library from any directory\n"
+    printf "  a project-local .memento/ still shadows it — check with 'just env'\n"
     printf "\033[0;32m✓ install completed successfully\033[0m\n"
+    echo ""
+
+# Show the resolved MEMENTO_ENV directory
+env:
+    #!/usr/bin/env bash
+    set -e
+    echo ""
+    printf "\033[0;34m=== Resolving MEMENTO_ENV ===\033[0m\n"
+    RESOLVED=$(.memento/scripts/memento_env.sh)
+    printf "MEMENTO_ENV = %s\n" "$RESOLVED"
+    if [ -d ".memento" ]; then
+        printf "  reason: a project-local .memento/ exists here and shadows the personal library\n"
+    else
+        printf "  reason: no project-local .memento/ here, so the personal library is used\n"
+    fi
+    if [ -d "$RESOLVED" ]; then
+        printf "\033[0;32m✓ env completed successfully\033[0m\n"
+    else
+        printf "\033[0;31m✗ env failed: %s does not exist — run 'just install'\033[0m\n" "$RESOLVED"
+        echo ""
+        exit 1
+    fi
     echo ""
 
 # Rebuild the skill graph from all SKILL.md files
 build:
     @echo ""
     @printf "\033[0;34m=== Building Skill Graph ===\033[0m\n"
+    @printf "MEMENTO_ENV = %s\n" "$(.memento/scripts/memento_env.sh)"
     @.memento/scripts/build_skill_graph.sh
     @printf "\033[0;32m✓ build completed successfully\033[0m\n"
     @echo ""
@@ -119,6 +145,7 @@ build:
 test: build
     @echo ""
     @printf "\033[0;34m=== Running Tests ===\033[0m\n"
+    @python3 tests/test_memento_env.py
     @python3 tests/test_skill_graph.py
     @python3 tests/test_find_connection.py
     @printf "\033[0;32m✓ test completed successfully\033[0m\n"

@@ -13,6 +13,10 @@ Usage:
     find_connection.py --from ENDPOINT --to ENDPOINT
                        [--nodes PATH] [--edges PATH] [--max-bridges N]
 
+--nodes and --edges default to $MEMENTO_ENV/graph/, where MEMENTO_ENV is a
+project-local `.memento/` when the current directory has one and
+`$HOME/.memento` otherwise (see memento_env.py).
+
 ENDPOINT forms:
     skill:<category/subcategory/name>   a specific skill node
     type:<TYPE>                         a value type from the skill guide
@@ -53,8 +57,12 @@ from pathlib import Path
 from typing import NoReturn
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DEFAULT_NODES = SCRIPT_DIR.parent / "graph" / "skills_nodes.txt"
-DEFAULT_EDGES = SCRIPT_DIR.parent / "graph" / "skills_edges.txt"
+sys.path.insert(0, str(SCRIPT_DIR))
+from memento_env import resolve_memento_env  # noqa: E402
+
+MEMENTO_ENV = resolve_memento_env()
+DEFAULT_NODES = MEMENTO_ENV / "graph" / "skills_nodes.txt"
+DEFAULT_EDGES = MEMENTO_ENV / "graph" / "skills_edges.txt"
 
 INFINITE = float("inf")
 TYPE_RE = re.compile(r"^[A-Z0-9_|]+$")

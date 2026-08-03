@@ -10,6 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added a Claude Code plugin bundling the memento skills and its marketplace entry.
 - Added a skill authoring guide and a categories entry to the memento resources.
+- Added `MEMENTO_ENV` resolution: a project-local `.memento/` is preferred, otherwise `~/.memento`, with an environment variable override. Implemented once in `memento_env.sh` and `memento_env.py`.
+- Added a `just env` target that prints the resolved library path and why it was chosen.
+
+### Changed
+
+- Changed every script and skill to read the library through `MEMENTO_ENV` instead of a hardcoded `.memento/` path, so the skills work from any directory once `just install` has run.
+- Changed the memento skills to invoke the graph builder directly rather than `just build`, which only exists inside this repository.
 
 ## 2026-07-21
 

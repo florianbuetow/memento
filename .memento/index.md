@@ -5,10 +5,23 @@ and human operators. Each skill is a self-contained directory holding a
 `SKILL.md` (instructions) and an optional `resources/` folder (helper scripts
 and assets).
 
+## Where the library lives
+
+Every path below is relative to `$MEMENTO_ENV`, the resolved library root:
+
+1. An already-set `MEMENTO_ENV` environment variable wins.
+2. Otherwise a project-local `.memento/` in the current working directory —
+   a repository carrying its own skills shadows the personal library.
+3. Otherwise `$HOME/.memento`, the library installed by `just install`.
+
+`scripts/memento_env.sh` (shell) and `scripts/memento_env.py` (Python)
+implement this and are the single source of truth; every other script and
+skill defers to them.
+
 ## Layout
 
 ```
-.memento/
+$MEMENTO_ENV/
 ├── index.md                              # this file — top-level entry point
 ├── graph/
 │   ├── skills_nodes.txt                  # generated: one line per skill
@@ -19,6 +32,8 @@ and assets).
 │   ├── skill_guide.md                    # canonical format for every SKILL.md
 │   └── run_logged.sh                     # timing wrapper for skill tool runs
 ├── scripts/
+│   ├── memento_env.sh                    # resolves MEMENTO_ENV (shell)
+│   ├── memento_env.py                    # resolves MEMENTO_ENV (Python)
 │   ├── build_skill_graph.sh              # regenerates graph/ from all SKILL.md
 │   ├── compute_edge_weights.py           # reweights edges from run-log durations
 │   └── find_connection.py                # finds skill chains / missing skills

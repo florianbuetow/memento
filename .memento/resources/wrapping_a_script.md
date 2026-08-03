@@ -4,9 +4,17 @@
 > to take an existing external tool (in this case the shellscript
 > `/Users/flo/scripts/transcribe.sh`) and wrap it as a memento atomic
 > skill. The result was the skill at
-> `.memento/skills/audio/transcription/whisper_mlx/`. The canonical format
-> rules live in `.memento/resources/skill_guide.md`; this document shows
+> `$MEMENTO_ENV/skills/audio/transcription/whisper_mlx/`. The canonical format
+> rules live in `$MEMENTO_ENV/resources/skill_guide.md`; this document shows
 > how to apply them.
+>
+> `$MEMENTO_ENV` is the resolved library root — a project-local `.memento/`
+> when the current directory has one, otherwise `$HOME/.memento`. Resolve it
+> once before following any step:
+>
+> ```bash
+> MEMENTO_ENV="${MEMENTO_ENV:-$([ -d .memento ] && echo ./.memento || echo "$HOME/.memento")}"
+> ```
 
 Use it as a template when you need to wrap any external tool — shellscript,
 binary, Python entrypoint, whatever — as a memento atomic skill.
@@ -17,10 +25,10 @@ any code, or you will throw work away (we did).
 
 ## Prerequisites — read these first
 
-1. `.memento/resources/skill_guide.md` — the canonical spec for `SKILL.md`,
+1. `$MEMENTO_ENV/resources/skill_guide.md` — the canonical spec for `SKILL.md`,
    the I/O type system (`FILE`, `FOLDER`, `TEXT`, `NUMBER`), the
    `~` optional-parameter marker, and the validator contract.
-2. `.memento/resources/example_skill/` — the reference implementation, kept
+2. `$MEMENTO_ENV/resources/example_skill/` — the reference implementation, kept
    as a documentation artifact (not a deployable skill). Copy the shape of
    its `SKILL.md` and its three helper scripts. See its `README.md` for
    what it does and does not illustrate.
@@ -118,7 +126,7 @@ cleaned `.txt` and `.srt` pair.
 
 ## The end state
 
-A new directory under `.memento/skills/<category>/<subcategory>/<name>/`
+A new directory under `$MEMENTO_ENV/skills/<category>/<subcategory>/<name>/`
 containing exactly four files:
 
 ```
@@ -159,7 +167,7 @@ the script does internally is none of the skill's business (see step 6).
 
 Decide `<category>/<subcategory>/<skill_name>/`.
 
-- Pick an existing category from `.memento/skills/categories.md` if one
+- Pick an existing category from `$MEMENTO_ENV/skills/categories.md` if one
   fits. Only register a new top-level category if no existing one applies.
 - Subcategory is a verb or domain noun (`conversion`, `download`,
   `transcription`).
@@ -276,7 +284,7 @@ Keep each section honest to the boundary from step 6:
   `validate_output.sh`.
 
 See the final result at
-`.memento/skills/audio/transcription/whisper_mlx/SKILL.md`.
+`$MEMENTO_ENV/skills/audio/transcription/whisper_mlx/SKILL.md`.
 
 ## Step 8 — Write `validate_input.sh`
 
@@ -343,7 +351,7 @@ arg count, stderr on failure).
 ## Step 11 — Set the executable bit
 
 ```bash
-chmod +x .memento/skills/<cat>/<sub>/<name>/resources/*.sh
+chmod +x "$MEMENTO_ENV/skills/<cat>/<sub>/<name>/resources/"*.sh
 ```
 
 `skill_guide.md` requires this. Skills with non-executable helpers are
@@ -375,11 +383,11 @@ different one, as long as its CLI surface is preserved.
 ## Step 13 — Regenerate the skill graph
 
 ```bash
-.memento/scripts/build_skill_graph.sh
+"$MEMENTO_ENV/scripts/build_skill_graph.sh"
 ```
 
 This re-parses every `SKILL.md` and refreshes
-`.memento/graph/skills_nodes.txt` and `.memento/graph/skills_edges.txt`.
+`$MEMENTO_ENV/graph/skills_nodes.txt` and `$MEMENTO_ENV/graph/skills_edges.txt`.
 The new skill is now visible to the Dijkstra-based chain finder.
 
 ## Checklist
