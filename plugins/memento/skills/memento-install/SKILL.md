@@ -7,8 +7,8 @@ description: Install the memento machinery to ~/.memento so the memento skills w
 
 Installs the memento machinery bundled with this plugin to `~/.memento`, the
 library the other memento skills fall back to when a project has no `.memento/`
-of its own. Everything needed is inside `${CLAUDE_PLUGIN_ROOT}` — no clone, no
-network, and no repository is required.
+of its own. Everything needed is inside `${CLAUDE_PLUGIN_ROOT}`; nothing outside
+it is read, and no network access is used.
 
 This installs machinery only: `scripts/`, `resources/`, `index.md` and the
 category registry. Atomic skills are personal and are never shipped, so a fresh
@@ -36,6 +36,6 @@ skills and run logs are left alone.
 5. Tell the user what to do next. `~/.memento` is now used from any directory
    except one holding its own `.memento/`, which shadows it; an exported
    `MEMENTO_ENV` overrides both. The library is empty, so /memento has nothing
-   to chain yet — point them at /memento-add-skill, and note that skills kept
-   only in `~/.memento/skills/` stay out of every repository while remaining
-   available everywhere.
+   to chain yet — point them at /memento-add-skill. Skills added to the personal
+   library are available from every directory; a project that needs its own set
+   keeps a `.memento/` of its own, which shadows the personal one.
