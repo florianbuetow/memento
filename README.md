@@ -41,33 +41,55 @@ are still found everywhere.
 
 `just env` prints the resolved path and the reason it was chosen.
 
-## Install the Claude Code skills
+## Installation
 
 The five memento slash commands ship as a Claude Code plugin. This repository is
-also the marketplace that publishes it, so install it straight from GitHub:
+also the marketplace that publishes it, so install it straight from GitHub.
 
-```
-/plugin marketplace add florianbuetow/memento
-/plugin install memento@memento
-```
+```bash
+# Add the marketplace (one time)
+claude plugin marketplace add florianbuetow/memento
 
-`marketplace add` reads [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
-at the repository root, which points at the plugin in
-[`plugins/memento/`](plugins/memento). The plugin name and the marketplace name
-are both `memento`, hence `memento@memento`. Run `/plugin` any time to list,
-update, or remove what you installed.
-
-To work on the plugin itself, add your checkout as the marketplace instead — the
-skills then load from your working tree:
-
-```
-/plugin marketplace add ~/path/to/memento
-/plugin install memento@memento
+# Install the plugin
+claude plugin install memento
 ```
 
-The skills operate on a skill library, so you need one of those too: run
-`just install` for a personal `~/.memento`, or keep a project-local `.memento/`.
-See [Where the skill library lives](#where-the-skill-library-lives).
+Restart Claude Code after installing, then set up the library the commands
+operate on:
+
+```
+/memento-install
+```
+
+That needs no clone and no repository — the plugin carries the memento
+machinery and installs it to `~/.memento`. The library starts **empty**: atomic
+skills are personal, so none ship with the plugin. Add your own with
+`/memento-add-skill`. Re-running `/memento-install` is the upgrade path — the
+machinery is replaced, your skills and run logs are not. See
+[Where the skill library lives](#where-the-skill-library-lives) for how a
+project-local `.memento/` shadows it.
+
+### Updating
+
+```bash
+# Update to the latest version
+claude plugin marketplace update memento
+
+# Verify the installed version
+find ~/.claude/plugins -name "plugin.json" -path "*memento*" -exec grep version {} \;
+```
+
+<details>
+<summary>Manual / Development Installation</summary>
+
+```bash
+git clone https://github.com/florianbuetow/memento.git
+cd memento
+# Load the plugin for this session only
+claude --plugin-dir ./plugins/memento
+```
+
+</details>
 
 ## How to use
 
@@ -80,6 +102,7 @@ Ask Claude with a slash command:
 | `/memento-update-skill` | Change an existing skill. |
 | `/memento-remove-skill` | Remove a skill. |
 | `/memento-rebuild-graph` | Rebuild the skill graph. |
+| `/memento-install` | Install the memento machinery to `~/.memento` (also the upgrade path). |
 
 **Example** - ask `/memento`:
 
@@ -97,12 +120,15 @@ memento/
 │   └── memento/                   # the plugin, installed via the marketplace
 │       ├── .claude-plugin/
 │       │   └── plugin.json        # plugin manifest
+│       ├── justfile               # install recipe, runs from the plugin cache
+│       ├── memento/               # bundled machinery, no atomic skills
 │       └── skills/                # Claude Code slash commands
 │           ├── memento/           # /memento - plan a chain for a goal
 │           ├── memento-add-skill/
 │           ├── memento-update-skill/
 │           ├── memento-remove-skill/
-│           └── memento-rebuild-graph/
+│           ├── memento-rebuild-graph/
+│           └── memento-install/
 ├── .memento/
 │   ├── index.md                   # overview / entry point
 │   ├── skills/                    # atomic skills, grouped by category

@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a skill authoring guide and a categories entry to the memento resources.
 - Added `MEMENTO_ENV` resolution: a project-local `.memento/` is preferred, otherwise `~/.memento`, with an environment variable override. Implemented once in `memento_env.sh` and `memento_env.py`.
 - Added a `just env` target that prints the resolved library path and why it was chosen.
+- Added a `/memento-install` skill that installs the memento machinery to `~/.memento` from the copy bundled with the plugin, so no clone, network or repository is needed. Re-running it replaces the machinery while leaving the user's skills and run logs alone.
+- Added a justfile and a machinery payload inside `plugins/memento/`, making the plugin self-contained in the plugin cache where the repository is absent. Atomic skills are personal and are never bundled, so an installed library starts empty.
+- Added a `just sync-plugin` target that copies the machinery into the plugin from an explicit allowlist, and `tests/test_plugin_payload.py`, which fails if any atomic skill or untracked file reaches the plugin or if the shipped machinery drifts from `.memento/`.
 
 ### Changed
 
