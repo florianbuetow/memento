@@ -20,6 +20,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Changed every script and skill to read the library through `MEMENTO_ENV` instead of a hardcoded `.memento/` path, so the skills work from any directory once `just install` has run.
 - Changed the memento skills to invoke the graph builder directly rather than `just build`, which only exists inside this repository.
+- Changed the plugin skills to reference only `$MEMENTO_ENV`, so an installed plugin no longer hunts the filesystem for a repository checkout.
+- Changed `/memento` to point users at `/memento-install` when no library resolves.
+- Bumped the memento plugin to 1.1.0 so marketplace updates re-fetch the new skills.
 
 ## 2026-07-21
 
