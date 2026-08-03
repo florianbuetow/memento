@@ -1,6 +1,6 @@
 {
   "name": "memento",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Procedural memory for AI agents: map a goal to a chain of atomic, typed skills via graph search, and add, update, remove, or rebuild skills in the library.",
   "author": {
     "name": "Florian",
