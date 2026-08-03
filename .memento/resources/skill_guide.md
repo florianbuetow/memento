@@ -1,14 +1,20 @@
 # Skill Guide
 
-This document defines how every `SKILL.md` in `.memento/skills/` must be
+This document defines how every `SKILL.md` in `$MEMENTO_ENV/skills/` must be
 formatted. A skill that deviates from this guide is considered malformed.
 
 ## Filesystem contract
 
+`$MEMENTO_ENV` is the resolved library root: an already-set `MEMENTO_ENV`
+wins, otherwise a project-local `.memento/` in the current working
+directory, otherwise `$HOME/.memento`. `scripts/memento_env.sh` and
+`scripts/memento_env.py` implement this; nothing else may hardcode a
+library path.
+
 Every skill lives at:
 
 ```
-.memento/skills/<category>/<subcategory>/<skill_name>/
+$MEMENTO_ENV/skills/<category>/<subcategory>/<skill_name>/
 ```
 
 The directory MUST contain:
@@ -109,16 +115,16 @@ The Procedure section must call `validate_input.sh` before the main work and
 ## Run logging
 
 Every execution of a skill's main tool (the Procedure's step 2 — not the
-validators) MUST be wrapped in `.memento/resources/run_logged.sh`:
+validators) MUST be wrapped in `$MEMENTO_ENV/resources/run_logged.sh`:
 
 ```
-.memento/resources/run_logged.sh <category>/<subcategory>/<name> <tool> <args...>
+$MEMENTO_ENV/resources/run_logged.sh <category>/<subcategory>/<name> <tool> <args...>
 ```
 
 The wrapper is transparent — stdout/stderr and the exit code pass through
 unchanged — and appends one tab-separated line per run
 (`<ISO8601 timestamp>  <skill id>  <duration ms>  exit=<code>`) to the
-append-only log `.memento/logs/skill_runs-<YYYY-MM>.log`. Rotation is
+append-only log `$MEMENTO_ENV/logs/skill_runs-<YYYY-MM>.log`. Rotation is
 monthly by filename: a new calendar month starts a new file, and old files
 are never modified. Individual SKILL.md files do not repeat this rule;
 it applies globally to all skills.
@@ -131,6 +137,9 @@ it applies globally to all skills.
 - Scripts must use `set -euo pipefail` (or equivalent) and must fail loudly
   rather than producing partial output.
 - Non-zero exit codes must be accompanied by a message on stderr.
+- A SKILL.md must reference its own helpers skill-relative (`resources/<name>.sh`),
+  never through a library path. The same skill directory must work unchanged
+  whether it is resolved from a project-local `.memento/` or from `$HOME/.memento`.
 
 ## Lists and iteration
 

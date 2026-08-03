@@ -7,7 +7,7 @@
 #
 #   skills_nodes.txt  one line per skill with parsed inputs and outputs
 #   skills_edges.txt  `source target weight` lines compatible with the
-#                     Dijkstra script in .memento/scripts/dijkstra.py.
+#                     Dijkstra script in $MEMENTO_ENV/scripts/dijkstra.py.
 #                     Weights default to 1 and are recomputed from the run
 #                     logs by compute_edge_weights.py (see below).
 #
@@ -19,13 +19,20 @@
 # on one side equals any alternative on the other.
 #
 # Usage: build_skill_graph.sh [SKILLS_DIR] [OUT_DIR]
-#   SKILLS_DIR  defaults to .memento/skills
-#   OUT_DIR     defaults to .memento/graph
+#   SKILLS_DIR  defaults to $MEMENTO_ENV/skills
+#   OUT_DIR     defaults to $MEMENTO_ENV/graph
+#
+# MEMENTO_ENV is resolved by memento_env.sh: a project-local `.memento/`
+# when the current directory has one, otherwise `$HOME/.memento`.
 
 set -euo pipefail
 
-SKILLS_DIR="${1:-.memento/skills}"
-OUT_DIR="${2:-.memento/graph}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=memento_env.sh
+source "$SCRIPT_DIR/memento_env.sh"
+
+SKILLS_DIR="${1:-$MEMENTO_ENV/skills}"
+OUT_DIR="${2:-$MEMENTO_ENV/graph}"
 
 if [[ ! -d "$SKILLS_DIR" ]]; then
     echo "error: skills directory not found: $SKILLS_DIR" >&2
@@ -155,10 +162,9 @@ END {
 # Reweight edges from run-log durations. The default weight stays 1; with
 # log data an edge A -> B becomes max(1, ln(1 + avg_secs(A) + avg_secs(B))),
 # where avg_secs is each skill's mean successful-run duration over the past
-# 3 months of .memento/logs/skill_runs-<YYYY-MM>.log files.
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# 3 months of $MEMENTO_ENV/logs/skill_runs-<YYYY-MM>.log files.
 if [[ -f "$SCRIPT_DIR/compute_edge_weights.py" ]]; then
-    python3 "$SCRIPT_DIR/compute_edge_weights.py"         --edges "$EDGES_FILE" --logs-dir "$SCRIPT_DIR/../logs" --months 3
+    python3 "$SCRIPT_DIR/compute_edge_weights.py"         --edges "$EDGES_FILE" --logs-dir "$MEMENTO_ENV/logs" --months 3
 fi
 
 n_nodes=$(wc -l < "$NODES_FILE" | tr -d ' ')

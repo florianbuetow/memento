@@ -8,6 +8,7 @@
   },
   "homepage": "https://github.com/florianbuetow/memento",
   "repository": "https://github.com/florianbuetow/memento",
+  "license": "MIT",
   "keywords": [
     "skills",
     "procedural-memory",

@@ -13,7 +13,8 @@ between two unmeasured skills keeps the default weight 1 exactly - the
 committed graph is byte-identical until real data exists.
 
 Log files (written by resources/run_logged.sh, rotated monthly):
-    .memento/logs/skill_runs-<YYYY-MM>.log
+    $MEMENTO_ENV/logs/skill_runs-<YYYY-MM>.log
+--logs-dir defaults to that directory (see memento_env.py).
 one tab-separated line per run:
     <ISO8601 timestamp>  <skill id>  <duration ms>  exit=<code>
 
@@ -33,7 +34,10 @@ from datetime import date
 from pathlib import Path
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-DEFAULT_LOGS = SCRIPT_DIR.parent / "logs"
+sys.path.insert(0, str(SCRIPT_DIR))
+from memento_env import resolve_memento_env  # noqa: E402
+
+DEFAULT_LOGS = resolve_memento_env() / "logs"
 
 
 def die(message: str) -> "NoReturn":

@@ -3,7 +3,7 @@
 # Run a skill's main tool and append its wall-clock duration to the
 # append-only run log, so skill effectiveness/speed can be tracked.
 #
-# Log location: .memento/logs/skill_runs-<YYYY-MM>.log — one file per
+# Log location: $MEMENTO_ENV/logs/skill_runs-<YYYY-MM>.log — one file per
 # calendar month, which is the rotation scheme: a new month simply starts
 # a new file, old files are never rewritten or truncated.
 #
@@ -23,7 +23,15 @@ fi
 shift
 
 script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-LOG_DIR="${script_dir}/../logs"
+# MEMENTO_ENV decides which library's log receives this run: a
+# project-local `.memento/` when the current directory has one, else
+# `$HOME/.memento`. Falling back to this script's own tree keeps logging
+# working if the resolver is missing from a partial install.
+if [[ -f "${script_dir}/../scripts/memento_env.sh" ]]; then
+  # shellcheck source=../scripts/memento_env.sh
+  source "${script_dir}/../scripts/memento_env.sh"
+fi
+LOG_DIR="${MEMENTO_ENV:-${script_dir}/..}/logs"
 mkdir -p "$LOG_DIR"
 LOG_FILE="${LOG_DIR}/skill_runs-$(date +%Y-%m).log"
 
