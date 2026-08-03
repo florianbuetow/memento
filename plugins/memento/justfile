@@ -1,0 +1,86 @@
+# =============================================================================
+# Justfile for the memento plugin.
+#
+# This ships INSIDE the plugin, so it is present wherever Claude Code unpacks
+# it. Everything it needs sits next to it under memento/ -- it never reaches
+# outside the plugin directory, because at install time the repository does
+# not exist.
+#
+# What it installs is the memento MACHINERY only. Atomic skills live under
+# .memento/skills/<category>/ in a user's own library; they are personal and
+# are never shipped by the plugin. A fresh install therefore starts with an
+# empty skill library that the user fills with /memento-add-skill.
+#
+# Follows the repository justfile rules: printf for colors, blank lines around
+# command blocks, every target ends in a clear green success or red failure.
+# =============================================================================
+
+# Default recipe: show available commands
+_default:
+    @just help
+
+# Show help information
+help:
+    @clear
+    @echo ""
+    @printf "\033[0;34m=== memento plugin ===\033[0m\n"
+    @echo ""
+    @printf "\033[0;33mSetup & Lifecycle:\033[0m\n"
+    @printf "  %-40s %s\n" "install" "Install the memento machinery to ~/.memento"
+    @printf "  %-40s %s\n" "help" "Show this help message"
+    @echo ""
+
+# Install the memento machinery to ~/.memento
+install:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo ""
+    printf "\033[0;34m=== Installing memento to ~/.memento ===\033[0m\n"
+
+    SRC="{{justfile_directory()}}/memento"
+    if [ -z "${HOME:-}" ]; then
+        printf "\033[0;31m✗ install failed: HOME is not set\033[0m\n"
+        echo ""
+        exit 1
+    fi
+    if [ ! -d "$SRC/scripts" ]; then
+        printf "\033[0;31m✗ install failed: bundled machinery not found at %s\033[0m\n" "$SRC"
+        echo ""
+        exit 1
+    fi
+    DEST="$HOME/.memento"
+
+    # Machinery is replaced wholesale; it is the plugin's to own.
+    mkdir -p "$DEST"
+    for item in scripts resources index.md; do
+        rm -rf "${DEST:?}/$item"
+        cp -R "$SRC/$item" "$DEST/$item"
+    done
+    printf "\033[0;32m✓ machinery installed (scripts, resources, index.md)\033[0m\n"
+
+    # The skill library belongs to the user. Only seed the category registry
+    # when there is none; never touch a skill that is already there.
+    mkdir -p "$DEST/skills"
+    if [ -e "$DEST/skills/categories.md" ]; then
+        printf "\033[0;32m✓ existing skill library left untouched (%s skill(s))\033[0m\n" \
+            "$(find "$DEST/skills" -name 'SKILL.md' | wc -l | tr -d ' ')"
+    else
+        cp "$SRC/skills/categories.md" "$DEST/skills/categories.md"
+        printf "\033[0;32m✓ empty skill library created — add skills with /memento-add-skill\033[0m\n"
+    fi
+
+    find "$DEST" -name "*.sh" -exec chmod +x {} +
+    find "$DEST" -name "*.py" -exec chmod +x {} +
+    printf "\033[0;32m✓ scripts in %s are executable\033[0m\n" "$DEST"
+
+    if [ -d "$DEST/logs" ]; then
+        printf "\033[0;32m✓ run logs left untouched\033[0m\n"
+    fi
+
+    "$DEST/scripts/build_skill_graph.sh" "$DEST/skills" "$DEST/graph" 2>&1 | sed 's/^/  /'
+    printf "\033[0;32m✓ skill graph built\033[0m\n"
+
+    printf "\033[0;32m✓ install completed successfully\033[0m\n"
+    printf "  the memento skills now resolve this library from any directory\n"
+    printf "  a project-local .memento/ still shadows it\n"
+    echo ""

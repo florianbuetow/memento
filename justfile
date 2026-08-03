@@ -51,6 +51,9 @@ help:
     @printf "\033[0;33mSkill Graph:\033[0m\n"
     @printf "  %-40s %s\n" "build" "Rebuild the skill graph from all SKILL.md files"
     @echo ""
+    @printf "\033[0;33mPlugin:\033[0m\n"
+    @printf "  %-40s %s\n" "sync-plugin" "Copy the memento machinery into the plugin payload"
+    @echo ""
     @printf "\033[0;33mCI & Testing:\033[0m\n"
     @printf "  %-40s %s\n" "test" "Build the skill graph and assert it is correct"
     @echo ""
@@ -141,10 +144,42 @@ build:
     @printf "\033[0;32m✓ build completed successfully\033[0m\n"
     @echo ""
 
+# Copy the memento machinery into the plugin payload
+sync-plugin:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    echo ""
+    printf "\033[0;34m=== Syncing the memento machinery into the plugin ===\033[0m\n"
+    DEST="plugins/memento/memento"
+
+    # ALLOWLIST, not an exclude list. Only these paths are ever copied, so
+    # nothing under .memento/skills/<category>/ can reach the plugin even if
+    # new categories appear. Those are the user's atomic skills: private,
+    # deliberately untracked, and never shipped.
+    rm -rf "$DEST"
+    mkdir -p "$DEST/skills"
+    cp    .memento/index.md              "$DEST/index.md"
+    cp -R .memento/scripts               "$DEST/scripts"
+    cp -R .memento/resources             "$DEST/resources"
+    cp    .memento/skills/categories.md  "$DEST/skills/categories.md"
+    find "$DEST" -name '.DS_Store' -delete
+    printf "\033[0;32m✓ copied machinery: index.md, scripts/, resources/, skills/categories.md\033[0m\n"
+
+    LEAKED=$(find "$DEST/skills" -name 'SKILL.md' | wc -l | tr -d ' ')
+    if [ "$LEAKED" -ne 0 ]; then
+        printf "\033[0;31m✗ sync-plugin failed: %s atomic skill(s) leaked into the payload\033[0m\n" "$LEAKED"
+        echo ""
+        exit 1
+    fi
+    printf "\033[0;32m✓ atomic skills shipped: 0 (they are never the plugin's to ship)\033[0m\n"
+    printf "\033[0;32m✓ sync-plugin completed successfully\033[0m\n"
+    echo ""
+
 # Build the skill graph and assert it is correct
 test: build
     @echo ""
     @printf "\033[0;34m=== Running Tests ===\033[0m\n"
+    @python3 tests/test_plugin_payload.py
     @python3 tests/test_memento_env.py
     @python3 tests/test_skill_graph.py
     @python3 tests/test_find_connection.py
