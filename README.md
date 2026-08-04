@@ -4,7 +4,7 @@ Memento gives an AI agent a procedural memory: atomic, reusable skills that can 
 
 ## Key Properties
 
-- **Procedural agent memory** - stored how-to-do actinos the agent can run instead of re-deriving it every time.
+- **Procedural agent memory** - stored how-to knowledge the agent runs instead of re-deriving it every time.
 - **Chainable atomic skills** - each skill does exactly one thing, with typed inputs and outputs.
 - **Deterministic skill chaining** - every skill validates its inputs and outputs and runs the same way each time.
 - **Graph search** - Dijkstra finds the shortest chain of skills for a goal, or flags missing skills if there is a gap.
