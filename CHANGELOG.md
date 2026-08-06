@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Added a `/memento-install` skill that installs the memento machinery to `~/.memento` from the copy bundled with the plugin, so no clone, network or repository is needed. Re-running it replaces the machinery while leaving the user's skills and run logs alone.
 - Added a justfile and a machinery payload inside `plugins/memento/`, making the plugin self-contained in the plugin cache where the repository is absent. Atomic skills are personal and are never bundled, so an installed library starts empty.
 - Added a `just sync-plugin` target that copies the machinery into the plugin from an explicit allowlist, and `tests/test_plugin_payload.py`, which fails if any atomic skill or untracked file reaches the plugin or if the shipped machinery drifts from `.memento/`.
+- Added `scripts/find_connection.sh`, the entry point for chain finding. It launches `find_connection.py`, passing every argument through and preserving its exit code, so a Python script is never invoked directly.
 
 ### Changed
 
@@ -23,6 +24,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the plugin skills to reference only `$MEMENTO_ENV`, so an installed plugin no longer hunts the filesystem for a repository checkout.
 - Changed `/memento` to point users at `/memento-install` when no library resolves.
 - Bumped the memento plugin to 1.1.0 so marketplace updates re-fetch the new skills.
+- Changed `/memento` to call `scripts/find_connection.sh` instead of `find_connection.py`. Invoking the Python script directly was routinely denied by permission allowlists, which broke chain finding.
+- Added a "Script invocation" rule to the skill authoring guide: every entry point a SKILL.md invokes must be a shell script, with other languages launched as workers from inside it.
+- Bumped the memento plugin to 1.2.0 so marketplace updates re-fetch the shell entry point.
 
 ## 2026-07-21
 

@@ -129,6 +129,24 @@ monthly by filename: a new calendar month starts a new file, and old files
 are never modified. Individual SKILL.md files do not repeat this rule;
 it applies globally to all skills.
 
+## Script invocation
+
+Every entry point a SKILL.md invokes — the main tool and both validators — must
+be a **shell script**. Other languages are workers, launched from inside it:
+
+```
+GOOD:  SKILL.md -> resources/helper.sh -> "$PYTHON_BIN" "$SELF_DIR/worker.py"
+BAD:   SKILL.md -> resources/worker.py
+```
+
+A skill whose SKILL.md invokes a `.py` directly is malformed. Calling `python3`
+*inside* a shell script is fine and expected — see
+`audio/dji/auto_speaker_select`, whose helper resolves `python3` and drives four
+`.py` workers.
+
+The same holds for the library's own scripts: `scripts/find_connection.sh` is
+the entry point, `find_connection.py` the worker behind it.
+
 ## Determinism contract for helper scripts
 
 - Scripts must be deterministic for a given set of inputs.
