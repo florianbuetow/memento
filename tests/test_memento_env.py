@@ -204,6 +204,79 @@ def test_tools_follow_the_resolved_library(tmp: Path) -> None:
     )
 
 
+def test_find_connection_wrapper(tmp: Path) -> None:
+    """find_connection.sh is the entry point; find_connection.py is its worker.
+
+    A Python script is never invoked directly, so the shell wrapper has to be
+    a faithful stand-in: same arguments through, same output back, same exit
+    code. Everything below is asserted against a synthetic two-node graph
+    passed via --nodes/--edges, so these checks hold in a clean checkout,
+    where `.memento/skills` deliberately ships no atomic skills at all.
+    """
+    home = tmp / "home3"
+    home.mkdir()
+    library = install_library(home)
+    elsewhere = tmp / "elsewhere3"
+    elsewhere.mkdir()
+
+    wrapper = library / "scripts" / "find_connection.sh"
+    worker = library / "scripts" / "find_connection.py"
+
+    check(
+        "wrapper: find_connection.sh exists and is executable",
+        wrapper.is_file() and os.access(wrapper, os.X_OK),
+        f"missing or not executable: {wrapper}",
+    )
+    if not wrapper.is_file():
+        return
+
+    # alpha: TEXT -> AUDIO_FILE, beta: AUDIO_FILE -> TEXT_FILE_TXT, so a
+    # TEXT -> TEXT_FILE_TXT request must chain the two.
+    graph = tmp / "graph3"
+    graph.mkdir()
+    nodes, edges = graph / "nodes.txt", graph / "edges.txt"
+    nodes.write_text(
+        "demo/one/alpha\tinputs=TEXT\toutputs=AUDIO_FILE\n"
+        "demo/two/beta\tinputs=AUDIO_FILE\toutputs=TEXT_FILE_TXT\n",
+        encoding="utf-8",
+    )
+    edges.write_text("demo/one/alpha demo/two/beta 1\n", encoding="utf-8")
+    paths = ["--nodes", str(nodes), "--edges", str(edges)]
+
+    # A real chain through the wrapper. This also proves --nodes/--edges reach
+    # the worker instead of being swallowed by the shell.
+    found = run(
+        [str(wrapper), "--from", "type:TEXT", "--to", "type:TEXT_FILE_TXT", *paths],
+        elsewhere,
+        home,
+    )
+    check(
+        "wrapper: find_connection.sh finds a chain",
+        "CHAIN:" in found and "demo/one/alpha" in found and "demo/two/beta" in found,
+        f"got {found!r}",
+    )
+
+    # The wrapper must be indistinguishable from the worker. run() folds a
+    # non-zero exit into its return value, so each comparison covers stdout,
+    # stderr and the exit code together — including the exit codes callers
+    # switch on: 0 chain, 1 error, 2 no chain.
+    cases = (
+        ("a chain", ["--from", "type:TEXT", "--to", "type:TEXT_FILE_TXT", *paths]),
+        ("no chain", ["--from", "type:TEXT_FILE_SRT", "--to", "type:IMAGE_FILE", *paths]),
+        ("an unknown skill", ["--from", "skill:no/such/skill", "--to", "type:TEXT", *paths]),
+        ("--help", ["--help"]),
+        ("no arguments", []),
+    )
+    for label, args in cases:
+        via_sh = run([str(wrapper), *args], elsewhere, home)
+        via_py = run([str(worker), *args], elsewhere, home)
+        check(
+            f"wrapper: .sh and .py agree given {label}",
+            via_sh == via_py,
+            f"sh={via_sh!r} py={via_py!r}",
+        )
+
+
 def main() -> None:
     for path in (ENV_SH, ENV_PY):
         if not path.exists():
@@ -214,6 +287,7 @@ def main() -> None:
     try:
         test_resolution_rules(tmp)
         test_tools_follow_the_resolved_library(tmp)
+        test_find_connection_wrapper(tmp)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 

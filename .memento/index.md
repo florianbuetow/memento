@@ -36,7 +36,8 @@ $MEMENTO_ENV/
 │   ├── memento_env.py                    # resolves MEMENTO_ENV (Python)
 │   ├── build_skill_graph.sh              # regenerates graph/ from all SKILL.md
 │   ├── compute_edge_weights.py           # reweights edges from run-log durations
-│   └── find_connection.py                # finds skill chains / missing skills
+│   ├── find_connection.sh                # entry point: finds skill chains / missing skills
+│   └── find_connection.py                # worker, launched by find_connection.sh
 └── skills/
     ├── categories.md                     # registry of top-level categories
     └── <category>/<subcategory>/<skill>/
@@ -57,7 +58,7 @@ $MEMENTO_ENV/
 
 ## How to find a skill chain
 
-Run `scripts/find_connection.py --from <skill-id|type:TYPE> --to <skill-id|type:TYPE>`
+Run `scripts/find_connection.sh --from <skill-id|type:TYPE> --to <skill-id|type:TYPE>`
 to search the generated graph — Dijkstra forward from the start and backward
 from the goal. It prints the shortest chain of skills (`CHAIN:` / `STEP:`
 lines) or, when no chain exists, explicitly flags the missing atomic skill
