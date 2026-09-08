@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a test suite that could not pass. Both `test_memento_env.py` and `test_find_connection.py` asserted against atomic skills that stopped being committed when skills became personal, so the chain finder was asked to search an empty graph. The environment test now plants its own fixture skills, and the real-library test is phrased against whatever the committed graph holds instead of naming particular skills.
+- Fixed the authoring guide's TYPE list, which omitted `PDF_FILE` even though two skills already declare it. The list is what `/memento` and `/memento-add-skill` treat as the vocabulary, so a type in active use was undocumented.
+- Bumped the memento plugin to 1.3.1 so marketplace updates re-fetch the corrected TYPE list.
 
 ## 2026-07-21
 

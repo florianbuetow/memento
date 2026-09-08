@@ -56,8 +56,8 @@ output_validation_script: resources/validate_output.sh
 ```
 
 Valid `<TYPE>` values: `FOLDER`, `FILE`, `AUDIO_FILE`, `VIDEO_FILE`,
-`IMAGE_FILE`, `TEXT_FILE`, `TEXT_FILE_TXT`, `TEXT_FILE_SRT`, `TEXT`,
-`NUMBER`, `TMUX_SESSION`.
+`IMAGE_FILE`, `PDF_FILE`, `TEXT_FILE`, `TEXT_FILE_TXT`, `TEXT_FILE_SRT`,
+`TEXT`, `NUMBER`, `TMUX_SESSION`.
 
 `TEXT_FILE` is a plain-text file of unspecified format; `TEXT_FILE_<EXT>`
 variants (`TEXT_FILE_TXT`, `TEXT_FILE_SRT`) pin the concrete format.
