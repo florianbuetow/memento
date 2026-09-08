@@ -49,12 +49,20 @@ $MEMENTO_ENV/
 
 1. Read `skills/categories.md` and pick the relevant category.
 2. Descend into the category directory and locate the desired skill.
-3. Read its `SKILL.md` to learn the inputs, outputs, and procedure.
-4. Invoke the helper scripts under that skill's `resources/` directory.
-   Wrap the main tool invocation (Procedure step 2) in
-   `resources/run_logged.sh <category>/<subcategory>/<name> <tool> <args...>`
-   so its duration lands in the monthly run log (see the "Run logging"
-   section of `resources/skill_guide.md`).
+3. Read its `SKILL.md`. That file is the skill's complete interface: what it
+   takes, what it produces, and a procedure naming every command to run.
+4. Run the commands the procedure names, in order, passing every argument it
+   lists — an omitted optional input is passed as an empty string, never as a
+   dropped positional slot. Wrap the main tool invocation (Procedure step 2)
+   in `$MEMENTO_ENV/resources/run_logged.sh <category>/<subcategory>/<name> <tool> <args...>`
+   so its duration lands in the monthly run log; the validators run unwrapped.
+
+The files under a skill's `resources/`, and the library's own `scripts/`, are
+implementations: invoke them, do not read them. Everything a caller needs is
+in the `SKILL.md` plus what a command reports — `KEY=value` lines on stdout,
+diagnostics on stderr, and the exit code. Reading an implementation couples
+the caller to details the skill exists to hide, so open one only to diagnose
+a command that failed without explaining why.
 
 ## How to find a skill chain
 

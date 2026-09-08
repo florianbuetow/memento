@@ -74,6 +74,34 @@ def install_library(dest_parent: Path) -> Path:
     return dest
 
 
+def plant_skill(
+    library: Path, category: str, subcategory: str, name: str, inp: str, out: str
+) -> None:
+    """Write one minimal, parseable SKILL.md into an installed library.
+
+    Atomic skills are personal and are never shipped, so a freshly installed
+    library has no skills and therefore no graph edges. A test that needs a
+    chain to search must supply its own skills rather than assume any.
+    """
+    skill_dir = library / "skills" / category / subcategory / name
+    skill_dir.mkdir(parents=True)
+    (skill_dir / "SKILL.md").write_text(
+        "---\n"
+        f"name: {name}\n"
+        f"category: {category}\n"
+        f"subcategory: {subcategory}\n"
+        "summary: Fixture skill planted by the test suite.\n"
+        "inputs:\n"
+        f"  - {inp}\n"
+        "outputs:\n"
+        f"  - {out}\n"
+        "---\n"
+        "\n"
+        f"# {name}\n",
+        encoding="utf-8",
+    )
+
+
 def test_resolution_rules(tmp: Path) -> None:
     home = tmp / "home"
     home.mkdir()
@@ -170,11 +198,18 @@ def test_tools_follow_the_resolved_library(tmp: Path) -> None:
     )
 
     # The finder must default --nodes/--edges to the same resolved library,
-    # so it works with no path flags from anywhere.
+    # so it works with no path flags from anywhere. Atomic skills are
+    # personal and are never shipped, so an installed library starts with an
+    # empty skills/ tree: plant a two-skill chain for the finder to search.
+    plant_skill(library, "video", "download", "probe_source", "URL::TEXT", "OUT::VIDEO_FILE")
+    plant_skill(
+        library, "audio", "transcription", "probe_sink", "IN::VIDEO_FILE", "OUT::TEXT_FILE_TXT"
+    )
+    run([str(library / "scripts" / "build_skill_graph.sh")], elsewhere, home)
     found = run(
         [
             str(library / "scripts" / "find_connection.py"),
-            "--from", "skill:video/download/from_youtube",
+            "--from", "skill:video/download/probe_source",
             "--to", "type:TEXT_FILE_TXT",
         ],
         elsewhere,

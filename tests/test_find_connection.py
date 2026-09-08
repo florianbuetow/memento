@@ -271,36 +271,23 @@ def test_errors(tmp: Path) -> None:
 
 
 def test_real_library() -> None:
-    source = "video/download/from_youtube"
+    """Semantic invariants over the committed graph, whatever it holds.
 
-    result = run_finder(REAL_NODES, REAL_EDGES, f"skill:{source}", "type:TEXT_FILE_TXT")
-    check("real: video download to transcript text exits 0", result.returncode == 0, result.stderr.strip())
-    check(
-        "real: transcript chain goes through whisper_mlx",
-        "audio/transcription/whisper_mlx" in result.stdout,
-        result.stdout,
-    )
-
+    Atomic skills are personal and are never committed, so this repository's
+    graph is normally empty and the invariants below simply have nothing to
+    check. They are phrased against whatever the graph contains: naming a
+    concrete skill here would bake one developer's personal library into the
+    suite, which is how this test rotted the first time.
+    """
     nodes = parse_real_nodes()
-    image_producers = [
-        n for n, (_, outs) in nodes.items()
-        if any("IMAGE_FILE" in t.split("|") for t in outs)
-    ]
-    result = run_finder(REAL_NODES, REAL_EDGES, source, "images/viewing/phoenix_slides")
-    if image_producers:
-        check(
-            "real: image viewing is reachable via an IMAGE_FILE producer",
-            result.returncode == 0,
-            result.stdout,
-        )
-    else:
-        check("real: image viewing is unreachable today", result.returncode == 2, result.stdout)
-        check(
-            "real: the missing image-producing skill is flagged",
-            "MISSING SKILL:" in result.stdout and "IMAGE_FILE" in result.stdout,
-            result.stdout,
-        )
+    if not nodes:
+        check("real: the committed library ships no atomic skills", True)
+        return
 
+    consumers = [n for n, (ins, _) in nodes.items() if ins]
+    source = sorted(consumers or nodes)[0]
+
+    gaps: list[tuple[str, str]] = []
     for target in sorted(nodes):
         result = run_finder(REAL_NODES, REAL_EDGES, source, target)
         ok = result.returncode in (0, 2) and (
@@ -309,7 +296,24 @@ def test_real_library() -> None:
         if not ok:
             check(f"real: sweep to {target} yields a verdict", False, result.stdout + result.stderr)
             return
+        if result.returncode == 2:
+            gaps.append((target, result.stdout))
     check("real: every target yields a chain or an explicit gap", True)
+
+    result = run_finder(REAL_NODES, REAL_EDGES, source, source)
+    check(
+        "real: a skill reaches itself in a one-node chain",
+        result.returncode == 0 and "CHAIN:" in result.stdout,
+        result.stdout + result.stderr,
+    )
+
+    if gaps:
+        target, out = gaps[0]
+        check(
+            "real: an unreachable target names the missing skill",
+            "MISSING SKILL:" in out,
+            f"{target}: {out}",
+        )
 
 
 def main() -> None:
