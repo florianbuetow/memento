@@ -27,6 +27,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed `/memento` to call `scripts/find_connection.sh` instead of `find_connection.py`. Invoking the Python script directly was routinely denied by permission allowlists, which broke chain finding.
 - Added a "Script invocation" rule to the skill authoring guide: every entry point a SKILL.md invokes must be a shell script, with other languages launched as workers from inside it.
 - Bumped the memento plugin to 1.2.0 so marketplace updates re-fetch the shell entry point.
+- Changed `/memento` to state the script boundary explicitly: a skill's `SKILL.md` is its complete interface, and everything under a skill's `resources/` or under `$MEMENTO_ENV/scripts/` is invoked, never opened. Agents were routinely inspecting helper implementations while planning and executing chains, which is exactly the coupling the library exists to remove. The rule names where each fact comes from instead, and allows a single debugging exception.
+- Changed `/memento` to carry the two library-wide execution conventions that individual SKILL.md files do not all restate — every argument the Procedure lists is passed positionally with `""` for an omitted optional, and `run_logged.sh` wraps only the main tool call — so executing a chain no longer requires opening the authoring guide.
+- Changed the library index's "How to use a skill" section to carry the same boundary and to name `$MEMENTO_ENV/resources/run_logged.sh` explicitly. It previously told the reader to invoke the helper scripts under a skill's `resources/` directory, handing over the directory with no restriction.
+- Changed `/memento` to take TYPE values from the graph node file rather than from the authoring guide, removing the last reason for an executing agent to open `skill_guide.md`.
+- Bumped the memento plugin to 1.3.0 so marketplace updates re-fetch the boundary rule.
+
+### Fixed
+
+- Fixed a test suite that could not pass. Both `test_memento_env.py` and `test_find_connection.py` asserted against atomic skills that stopped being committed when skills became personal, so the chain finder was asked to search an empty graph. The environment test now plants its own fixture skills, and the real-library test is phrased against whatever the committed graph holds instead of naming particular skills.
 
 ## 2026-07-21
 
