@@ -44,7 +44,7 @@ help:
     @echo ""
     @printf "\033[0;33mSetup & Lifecycle:\033[0m\n"
     @printf "  %-40s %s\n" "init" "Verify required tools and prepare the repository"
-    @printf "  %-40s %s\n" "install" "Copy .memento to ~/.memento"
+    @printf "  %-40s %s\n" "install" "Install the machinery to ~/.memento (keeps your skills)"
     @printf "  %-40s %s\n" "env" "Show the resolved MEMENTO_ENV directory"
     @printf "  %-40s %s\n" "help" "Show this help message"
     @echo ""
@@ -81,36 +81,70 @@ init:
     @printf "\033[0;32m✓ init completed successfully\033[0m\n"
     @echo ""
 
-# Copy .memento to ~/.memento
+# Install the memento machinery to ~/.memento, keeping any existing skills
 install:
     #!/usr/bin/env bash
-    set -e
+    set -euo pipefail
     echo ""
-    printf "\033[0;34m=== Installing .memento to ~/.memento ===\033[0m\n"
-    if [ -z "$HOME" ]; then
+    printf "\033[0;34m=== Installing the memento machinery to ~/.memento ===\033[0m\n"
+    if [ -z "${HOME:-}" ]; then
         printf "\033[0;31m✗ install failed: HOME is not set\033[0m\n"
         echo ""
         exit 1
     fi
-    DEST="$HOME/.memento"
-    if [ -e "$DEST" ]; then
-        printf "\033[0;33m! %s already exists and will be replaced.\033[0m\n" "$DEST"
+    if [ ! -d .memento/scripts ]; then
+        printf "\033[0;31m✗ install failed: no machinery found at .memento\033[0m\n"
+        echo ""
+        exit 1
     fi
-    printf "Copy .memento to %s? [y/N] " "$DEST"
+    DEST="$HOME/.memento"
+
+    # Machinery only. A user's skills and run logs are theirs, are never
+    # removed, and this recipe is therefore also the upgrade path. Nothing
+    # here deletes the library as a whole.
+    if [ -e "$DEST" ]; then
+        printf "\033[0;33m! %s exists: scripts, resources and index.md are replaced\033[0m\n" "$DEST"
+        printf "\033[0;33m  skills/ and logs/ are left untouched\033[0m\n"
+    fi
+    printf "Install the machinery to %s? [y/N] " "$DEST"
     read -r REPLY
     if [ "$REPLY" != "y" ] && [ "$REPLY" != "Y" ]; then
         printf "\033[0;31m✗ install aborted: not confirmed\033[0m\n"
         echo ""
         exit 1
     fi
-    rm -rf "$DEST"
-    cp -R .memento "$DEST"
-    printf "\033[0;32m✓ copied to %s\033[0m\n" "$DEST"
+
+    mkdir -p "$DEST"
+    for item in scripts resources index.md; do
+        rm -rf "${DEST:?}/$item"
+        cp -R ".memento/$item" "$DEST/$item"
+    done
+    printf "\033[0;32m✓ machinery installed (scripts, resources, index.md)\033[0m\n"
+
+    # Seed the category registry only when there is no library yet.
+    mkdir -p "$DEST/skills"
+    if [ -e "$DEST/skills/categories.md" ]; then
+        printf "\033[0;32m✓ existing skill library left untouched (%s skill(s))\033[0m\n" \
+            "$(find "$DEST/skills" -name 'SKILL.md' | wc -l | tr -d ' ')"
+    else
+        cp .memento/skills/categories.md "$DEST/skills/categories.md"
+        printf "\033[0;32m✓ empty skill library created — add skills with /memento-add-skill\033[0m\n"
+    fi
+
     find "$DEST" -name "*.sh" -exec chmod +x {} +
+    find "$DEST" -name "*.py" -exec chmod +x {} +
     printf "\033[0;32m✓ scripts in %s are executable\033[0m\n" "$DEST"
+
+    if [ -d "$DEST/logs" ]; then
+        printf "\033[0;32m✓ run logs left untouched\033[0m\n"
+    fi
+
+    "$DEST/scripts/build_skill_graph.sh" "$DEST/skills" "$DEST/graph" 2>&1 | sed 's/^/  /'
+    printf "\033[0;32m✓ skill graph built\033[0m\n"
+
+    printf "\033[0;32m✓ install completed successfully\033[0m\n"
     printf "  the memento skills now resolve this library from any directory\n"
     printf "  a project-local .memento/ still shadows it — check with 'just env'\n"
-    printf "\033[0;32m✓ install completed successfully\033[0m\n"
     echo ""
 
 # Show the resolved MEMENTO_ENV directory
