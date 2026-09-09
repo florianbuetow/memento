@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Fixed `just install`, which ran `rm -rf ~/.memento` before copying and would therefore have destroyed a user's entire skill library and run logs. The repository ships no atomic skills, so a single install wiped everything the user had added, despite the documentation promising the opposite. It now replaces only the machinery — `scripts/`, `resources/` and `index.md` — reports the skill count it left alone, and never removes the library as a whole, matching the installer the plugin already used.
 - Fixed a test suite that could not pass. Both `test_memento_env.py` and `test_find_connection.py` asserted against atomic skills that stopped being committed when skills became personal, so the chain finder was asked to search an empty graph. The environment test now plants its own fixture skills, and the real-library test is phrased against whatever the committed graph holds instead of naming particular skills.
 - Fixed the authoring guide's TYPE list, which omitted `PDF_FILE` even though two skills already declare it. The list is what `/memento` and `/memento-add-skill` treat as the vocabulary, so a type in active use was undocumented.
 - Bumped the memento plugin to 1.3.1 so marketplace updates re-fetch the corrected TYPE list.

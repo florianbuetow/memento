@@ -20,7 +20,7 @@ cd memento
 just init      # verify tools
 just build     # generate the skill graph
 just test      # check the graph is valid
-just install   # copy .memento to ~/.memento
+just install   # install the machinery to ~/.memento (keeps your skills)
 ```
 
 Run `just` any time to see all commands.
