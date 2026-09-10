@@ -69,6 +69,32 @@ machinery is replaced, your skills and run logs are not. See
 [Where the skill library lives](#where-the-skill-library-lives) for how a
 project-local `.memento/` shadows it.
 
+### Codex
+
+After installing Memento for Claude Code and running `/memento-install`, expose
+the same top-level Memento skill to Codex with a symlink:
+
+```bash
+mkdir -p "$HOME/.agents/skills"
+ln -s \
+  "$HOME/.claude/plugins/marketplaces/memento/plugins/memento/skills/memento" \
+  "$HOME/.agents/skills/memento"
+```
+
+This does not copy or move the Memento library. Codex continues to use the
+existing project-local `.memento/` or personal `~/.memento` library through
+`MEMENTO_ENV`. The atomic skills under that library are not installed as Codex
+skills; the top-level Memento skill discovers and runs them as needed.
+
+Codex can select the skill from a natural-language request:
+
+```text
+memento download this video and produce a transcript
+```
+
+Use `$memento` instead when explicit invocation is preferred. Codex detects new
+skills automatically; restart it if the skill does not appear in `/skills`.
+
 ### Updating
 
 ```bash
