@@ -140,9 +140,8 @@ BAD:   SKILL.md -> resources/worker.py
 ```
 
 A skill whose SKILL.md invokes a `.py` directly is malformed. Calling `python3`
-*inside* a shell script is fine and expected — see
-`audio/media/helper_example`, whose helper resolves `python3` and drives four
-`.py` workers.
+*inside* a shell script is fine and expected — a helper may resolve `python3`
+itself and drive any number of `.py` workers.
 
 The same holds for the library's own scripts: `scripts/find_connection.sh` is
 the entry point, `find_connection.py` the worker behind it.

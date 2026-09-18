@@ -32,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Changed the library index's "How to use a skill" section to carry the same boundary and to name `$MEMENTO_ENV/resources/run_logged.sh` explicitly. It previously told the reader to invoke the helper scripts under a skill's `resources/` directory, handing over the directory with no restriction.
 - Changed `/memento` to take TYPE values from the graph node file rather than from the authoring guide, removing the last reason for an executing agent to open `skill_guide.md`.
 - Bumped the memento plugin to 1.3.0 so marketplace updates re-fetch the boundary rule.
+- Changed every example skill id in the docs, the plugin skills, the authoring resources, and the presentation to name either the shipped `audio/conversion/to_mp3` reference skill or a neutral illustrative id. The repository previously named skills from the author's personal library, which is not part of this repository and is never shipped.
+- Bumped the memento plugin to 1.3.2 so marketplace updates re-fetch the neutral examples.
 
 ### Fixed
 

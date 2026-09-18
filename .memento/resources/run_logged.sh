@@ -17,7 +17,7 @@ set -uo pipefail  # deliberately no -e: a failing tool must still be logged
 SKILL_ID="${1:-}"
 if [[ -z "$SKILL_ID" || $# -lt 2 ]]; then
   echo "usage: run_logged.sh SKILL_ID COMMAND [ARGS...]" >&2
-  echo "  SKILL_ID: category/subcategory/name, e.g. audio/tts/say_text" >&2
+  echo "  SKILL_ID: category/subcategory/name, e.g. audio/conversion/to_mp3" >&2
   exit 2
 fi
 shift

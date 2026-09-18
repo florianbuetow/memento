@@ -161,7 +161,7 @@ memento/
 │   │   ├── categories.md
 │   │   ├── agents/
 │   │   ├── audio/
-│   │   │   └── transcription/speech_to_text/
+│   │   │   └── conversion/to_mp3/
 │   │   │       ├── SKILL.md        # typed contract + procedure
 │   │   │       └── resources/      # tool + validation scripts
 │   │   ├── images/

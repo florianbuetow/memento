@@ -438,7 +438,7 @@ just --summary | <span class="k">grep</span> -qw on-demand ||
         <p>postconditions hold?<br>artifacts exist, non-empty</p></div>
     </div>
     <p class="abort">✗ any non-zero exit aborts the chain at that link; the failing step is named in the log</p>
-    <pre class="code" style="margin-top:20px"><span class="c">## Procedure - say_text/SKILL.md, real file</span>
+    <pre class="code" style="margin-top:20px"><span class="c">## Procedure - say_text/SKILL.md</span>
 <span class="g">1.</span> Run resources/validate_input.sh "$TEXT".              <span class="r">Abort on non-zero exit.</span>
 <span class="g">2.</span> Run resources/say.sh "$TEXT" "$VOICE"                 <span class="c">(wrapped in run_logged.sh)</span>
 <span class="g">3.</span> Run resources/validate_output.sh.                     <span class="r">Abort on non-zero exit.</span></pre>
@@ -805,7 +805,7 @@ const GRAPHS = {
       {t:'$ scripts/find_connection.py --from type:TEXT --to skill:audio/tts/say_text', c:'dim',  at:0},
       {t:'FROM: type TEXT (consumers: audio/download, video/download, ...)', c:'text', at:1},
       {t:'TO:   skill audio/tts/say_text', c:'text', at:1},
-      {t:'FORWARD REACHABLE:  from_url x2 (0), speech_to_text, audacity, vlc (1), qwen, subl (2)', c:'cyan', at:4},
+      {t:'FORWARD REACHABLE:  from_url x2 (0), speech_to_text, audio_editor, play_video (1), local_llm, open_editor (2)', c:'cyan', at:4},
       {t:'BACKWARD REACHABLE: audio/tts/say_text (0) -- nothing produces TEXT', c:'magenta', at:5},
       {t:'NO CHAIN: the frontiers never meet', c:'red', at:6},
       {t:'CLOSEST CONNECTION: text/summarization/local_llm ~~> audio/tts/say_text', c:'text', at:7},

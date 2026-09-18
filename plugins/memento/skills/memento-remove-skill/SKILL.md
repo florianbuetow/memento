@@ -1,6 +1,6 @@
 ---
 name: memento-remove-skill
-description: Remove an atomic skill from the memento library and rebuild the skill graph. Use when the user asks to remove or delete a memento skill (e.g. "remove the say_text tts skill").
+description: Remove an atomic skill from the memento library and rebuild the skill graph. Use when the user asks to remove or delete a memento skill (e.g. "remove the to_mp3 audio skill").
 ---
 
 # Remove a memento skill

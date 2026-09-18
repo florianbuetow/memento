@@ -34,8 +34,7 @@ requires and the original was missing).
 - The "wrap an external shellscript" pattern documented in
   `wrapping_a_script.md`. This example wraps `ffmpeg` (a system binary)
   directly, which is also a valid shape. For the external-script-wrapping
-  shape, see one of the live skills under `$MEMENTO_ENV/skills/`, for example
-  `$MEMENTO_ENV/skills/video/download/from_url/`.
+  shape, see the walkthrough in `../wrapping_a_script.md`.
 
 ## Read alongside
 

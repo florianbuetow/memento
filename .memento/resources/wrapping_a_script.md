@@ -219,8 +219,9 @@ other skills that can be chained via the graph.
 
 `transcribe.sh` accepts both local file paths **and** YouTube URLs. We
 dropped URL handling from the skill's interface (`INPUT_PATH::FILE`, not
-`INPUT::TEXT`) because the existing `video/download/from_url` skill
-already covers that step. The URL flow becomes the chain
+`INPUT::TEXT`) because URL download is a separate
+capability for its own skill (e.g. `video/download/from_url`). The URL
+flow then becomes the chain
 `from_url → speech_to_text`.
 
 Atomic skills compose. Non-atomic skills duplicate.
@@ -246,8 +247,8 @@ what lives past it.**
 
 This means the skill must not contain, refer to, or rely on:
 
-- Internal pipeline stages of the script (ffmpeg, the transcriber, the
-  cleaner, intermediate WAV files, temp directories, …).
+- Internal pipeline stages of the script (the converter, the
+  transcriber, intermediate WAV files, temp directories, …).
 - Project directories or file locations belonging to the script.
 - Default values the script applies when an argument is omitted.
 - Enum lists, language constraints, format restrictions the script
@@ -373,7 +374,7 @@ build:
 - The list of `MODEL` values the script accepts.
 - The `-en` model + `LANGUAGE` constraint.
 - The accepted file-extension list.
-- The names of the underlying tools (ffmpeg, the transcriber, cleaner script).
+- The names of the underlying tools and libraries the script calls.
 - The description of the internal pipeline stages.
 
 If the boundary is clean, the skill should still work unchanged if the
